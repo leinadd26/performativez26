@@ -1,0 +1,12 @@
+{
+  "appId": "com.daniel.performativez",
+  "appName": "performativez",
+  "webDir": "www",
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "597516311188-akflulig94u8b9bqulvfu0ptjdmg4nls.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    }
+  }
+}
