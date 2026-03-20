@@ -3055,6 +3055,47 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
     finRender();
   };
 
+  window.transferUserData = async () => {
+  const fromUID = prompt('UID des Quell-Accounts (von wem kopieren):');
+  if (!fromUID) return;
+  const toUID = currentUser.uid;
+  if (fromUID === toUID) { toast('Gleicher Account!', 'error'); return; }
+
+  toast('Transfer läuft...', 'success');
+
+  try {
+    const batch = writeBatch(db);
+    const cols = ['actions', 'habits', 'finance'];
+
+    // User doc kopieren
+    const userSnap = await getDoc(doc(db, 'users', fromUID));
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      delete data.email;
+      batch.update(doc(db, 'users', toUID), data);
+    }
+
+    // Collections kopieren
+    for (const col of cols) {
+      const snap = await getDocs(collection(db, 'users', fromUID, col));
+      snap.forEach(d => {
+        batch.set(doc(collection(db, 'users', toUID, col)), d.data());
+      });
+    }
+
+    // DailyLogs kopieren
+    const logsSnap = await getDocs(collection(db, 'users', fromUID, 'dailyLogs'));
+    logsSnap.forEach(d => {
+      batch.set(doc(db, 'users', toUID, 'dailyLogs', d.id), d.data());
+    });
+
+    await batch.commit();
+    toast('✅ Alle Daten übertragen!', 'success');
+  } catch(e) {
+    toast('Fehler: ' + e.message, 'error');
+  }
+};
+
   function finFmt(n)     { return n.toLocaleString('de-DE', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
   function finFmtDate(s) { if (!s) return ''; const [y,m,d] = s.split('-'); return `${d}.${m}.${y}`; }
 </script>
