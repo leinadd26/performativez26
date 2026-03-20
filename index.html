@@ -1210,7 +1210,7 @@
 
   import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-           GoogleAuthProvider, OAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
+           GoogleAuthProvider, OAuthProvider, signInWithPopup,signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut,
            updateProfile }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
            collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch }
@@ -1332,7 +1332,7 @@
   window.handleApple = async () => {
     isHandlingPopup = true;
     try {
-      const c = await signInWithPopup(auth, ap);
+      await signInWithPopup(auth, ap);
       const ref = doc(db,'users',c.user.uid);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
@@ -1397,7 +1397,7 @@
     obData.name = ''; obData.goals = []; obData.obstacles = []; obData.commitment = '';
     showScreen('auth-screen');
   };
-
+  
   onAuthStateChanged(auth, async (user) => {
     clearTimeout(_loadingTimeout);
     if (isHandlingPopup) return; // Popup handler takes over
