@@ -1210,7 +1210,7 @@
 
   import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-           GoogleAuthProvider, OAuthProvider, signInWithPopup,signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut,
+           GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithCredential, onAuthStateChanged, signOut,
            updateProfile }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
            collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch }
@@ -1358,31 +1358,20 @@
   let isHandlingPopup = false;
 
   window.handleGoogle = async () => {
-    isHandlingPopup = true;
-    try {
-      const c = await signInWithPopup(auth, gp);
-      const ref = doc(db,'users',c.user.uid);
-      const snap = await getDoc(ref);
-
-      if (!snap.exists()) {
-        await setDoc(ref, {displayName:c.user.displayName||'',email:c.user.email,createdAt:new Date().toISOString(),onboardingComplete:false});
-        currentUser = c.user;
-        obData.name = c.user.displayName?.split(' ')[0] || '';
-        obStep = 0; showScreen('onboarding-screen'); renderObStep();
-      } else if (!snap.data().onboardingComplete) {
-        currentUser = c.user;
-        
-        obData.name = c.user.displayName?.split(' ')[0] || snap.data().displayName || '';
-        obStep = 0; showScreen('onboarding-screen'); renderObStep();
-      } else {
-        currentUser = c.user;
-        userData = snap.data();
-        
-        loadDashboard();
-      }
-    } catch(e) { if (e.code!=='auth/popup-closed-by-user') toast('Google-Anmeldung fehlgeschlagen.','error'); }
-    finally { isHandlingPopup = false; }
-  };
+  try {
+    const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+    await GoogleAuth.initialize({
+      clientId: '597516311188-akflulig94u8b9bqulvfu0ptjdmg4nls.apps.googleusercontent.com',
+      scopes: ['profile', 'email'],
+    });
+    const googleUser = await GoogleAuth.signIn();
+    const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+    const c = await signInWithCredential(auth, credential);
+    await handleAuthSuccess(c.user);
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user') toast('Google-Anmeldung fehlgeschlagen.', 'error');
+  }
+};
 
   window.handleLogout = async () => {
     if (unsubActions) { unsubActions(); unsubActions = null; }
