@@ -1,0 +1,36 @@
+{
+  "dir": "auto",
+  "name": "Performativez",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "https://performativez.web.app/?launchedfrom=homescreen",
+  "scope": "https://performativez.web.app",
+  "id": "https://performativez.web.app/fXg6zukqi4LBDMNdbHkb",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "https://pwa.xyz/A62c7XFkZcJ6peoBaRJY%2FoIiQrDWuNiGWHRH.png?alt=media&amp;token=ef8aca0b-a8c5-4ad2-918d-78611f225a95",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://pwa.xyz/A62c7XFkZcJ6peoBaRJY%2FZHpcXitYaKzWsyU.png?alt=media&amp;token=29428e35-0ed3-4245-a2ba-1209ed6eea4b",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+pwa",
+      "url": "https://performativez.web.app/?launchedfrom=homescreen&amp;pwaprotocolredirect=%s"
+    },
+    {
+      "protocol": "web+performativez",
+      "url": "https://performativez.web.app/?launchedfrom=homescreen&amp;pwaprotocolredirect=%s"
+    }
+  ],
+  "short_name": "Performativez"
+}
