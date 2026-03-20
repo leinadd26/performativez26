@@ -1359,7 +1359,13 @@
 
   window.handleGoogle = async () => {
   try {
-    const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+    const { GoogleAuth } = window.CapacitorGoogleAuth || {};
+    if (!GoogleAuth) {
+      // Fallback für Browser - normaler Popup
+      const c = await signInWithPopup(auth, gp);
+      await handleAuthSuccess(c.user);
+      return;
+    }
     await GoogleAuth.initialize({
       clientId: '597516311188-akflulig94u8b9bqulvfu0ptjdmg4nls.apps.googleusercontent.com',
       scopes: ['profile', 'email'],
