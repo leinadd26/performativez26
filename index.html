@@ -1397,7 +1397,9 @@
     obData.name = ''; obData.goals = []; obData.obstacles = []; obData.commitment = '';
     showScreen('auth-screen');
   };
-  
+  getRedirectResult(auth).then(result => {
+  if (result?.user) handleAuthSuccess(result.user);
+});
   onAuthStateChanged(auth, async (user) => {
     clearTimeout(_loadingTimeout);
     if (isHandlingPopup) return; // Popup handler takes over
