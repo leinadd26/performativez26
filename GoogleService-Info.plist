@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>597516311188-a72sje9qip86srhf4k8t8ef5l8736ihd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.597516311188-a72sje9qip86srhf4k8t8ef5l8736ihd</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBVCuYPajs2-4dKFYRThSJYo_Yr7lPnazU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>597516311188</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.daniel.performativez</string>
+	<key>PROJECT_ID</key>
+	<string>performativez</string>
+	<key>STORAGE_BUCKET</key>
+	<string>performativez.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:597516311188:ios:27a87db696e5d2bc987281</string>
+</dict>
+</plist>
