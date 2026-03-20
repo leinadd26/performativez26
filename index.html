@@ -1369,7 +1369,7 @@
     const c = await signInWithCredential(auth, credential);
     await handleAuthSuccess(c.user);
   } catch(e) {
-    if (e.code !== 'auth/popup-closed-by-user') toast('Google-Anmeldung fehlgeschlagen.', 'error');
+    toast(e.message || JSON.stringify(e), 'error');
   }
 };
 
