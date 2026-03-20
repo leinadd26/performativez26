@@ -1359,7 +1359,7 @@
 
   window.handleGoogle = async () => {
   try {
-    const { GoogleAuth } = window.CapacitorGoogleAuth || {};
+    const { GoogleAuth } = window.Capacitor?.Plugins || {};
     if (!GoogleAuth) {
       // Fallback für Browser - normaler Popup
       const c = await signInWithPopup(auth, gp);
