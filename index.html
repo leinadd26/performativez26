@@ -1359,23 +1359,10 @@
 
   window.handleGoogle = async () => {
   try {
-    const { GoogleAuth } = window.Capacitor?.Plugins || {};
-    if (!GoogleAuth) {
-      // Fallback für Browser - normaler Popup
-      const c = await signInWithPopup(auth, gp);
-      await handleAuthSuccess(c.user);
-      return;
-    }
-    await GoogleAuth.initialize({
-      clientId: '597516311188-akflulig94u8b9bqulvfu0ptjdmg4nls.apps.googleusercontent.com',
-      scopes: ['profile', 'email'],
-    });
-    const googleUser = await GoogleAuth.signIn();
-    const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-    const c = await signInWithCredential(auth, credential);
-    await handleAuthSuccess(c.user);
+    const plugins = window.Capacitor?.Plugins;
+    toast('Plugins: ' + Object.keys(plugins || {}).join(', '), 'error');
   } catch(e) {
-    toast(e.message || JSON.stringify(e), 'error');
+    toast('Fehler: ' + e.message, 'error');
   }
 };
 
