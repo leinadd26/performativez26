@@ -1620,7 +1620,21 @@
   // ─────────────────────────────────────────────
   let unsubActions = null, unsubHabits = null;
   let dailySaveTimer = null;
-  const todayKey = () => new Date().toISOString().slice(0,10); // "2025-01-15"
+  const todayKey = () => function getHabitPeriodStart(anchor, freq, unit) {
+  const anchorDate = new Date((anchor || todayKey()) + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const freqDays = unit === 'weeks' ? (freq||1) * 7 : (freq||1);
+  const daysSinceAnchor = Math.floor((today - anchorDate) / 86400000);
+  const periodIndex = Math.max(0, Math.floor(daysSinceAnchor / freqDays));
+  const periodStart = new Date(anchorDate.getTime() + periodIndex * freqDays * 86400000);
+  return periodStart.toISOString().slice(0,10);
+}
+
+function isHabitDone(data) {
+  if (!data.doneTodayDate) return false;
+  const periodStart = getHabitPeriodStart(data.anchor, data.freq, data.unit);
+  return data.doneTodayDate >= periodStart;
+}
 
   // ── ACTIONS ─────────────────────────────────
   function subscribeActions() {
