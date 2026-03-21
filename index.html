@@ -1149,7 +1149,7 @@
       <button id="runner-mode-static" onclick="setRunnerMode('static')" style="background:transparent;color:rgba(255,255,255,0.3);border:none;padding:3px 10px;border-radius:5px;font-family:var(--font-m);font-size:9px;text-transform:uppercase;letter-spacing:0.07em;cursor:pointer;transition:all 0.2s;">Statisch</button>
     </div>
     <div id="runner-live-clock" style="display:none;"></div>
-    <button onclick="runnerBack()" id="runner-back-btn" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);padding:5px 12px;border-radius:7px;font-size:10px;font-family:var(--font-m);cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.2s;display:none;" onmouseover="this.style.background='rgba(255,255,255,0.14)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='rgba(255,255,255,0.5)'">← Zurück</button>
+    <button onclick="runnerBack()" id="runner-back-btn" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);padding:5px 12px;border-radius:7px;font-size:10px;font-family:var(--font-m);cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.2s;" onmouseover="if(runnerIndex>0){this.style.background='rgba(255,255,255,0.14)';this.style.color='#fff'}" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='rgba(255,255,255,0.5)'">← Zurück</button>
     <button onclick="minimizeRunner()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:7px;font-size:10px;font-family:var(--font-m);cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.2s;display:flex;align-items:center;gap:5px;" onmouseover="this.style.background='rgba(255,255,255,0.14)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='rgba(255,255,255,0.5)'">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 8h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       Minimieren
@@ -2718,7 +2718,10 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
     }).join('');
     // Zeige Back-Button nur wenn nicht erster Schritt
 const backBtn = document.getElementById('runner-back-btn');
-if (backBtn) backBtn.style.display = runnerIndex > 0 ? 'block' : 'none';
+if (backBtn) {
+  backBtn.style.opacity = runnerIndex > 0 ? '1' : '0.3';
+  backBtn.style.pointerEvents = runnerIndex > 0 ? 'auto' : 'none';
+}
     // Reset bar
     const bar=document.getElementById('runner-status-fill');
     bar.style.width='100%'; bar.style.background='var(--accent)';
@@ -2872,12 +2875,16 @@ if (backBtn) backBtn.style.display = runnerIndex > 0 ? 'block' : 'none';
   window.runnerBack = () => {
   if (runnerIndex <= 0) return;
   clearInterval(runnerClockInterval);
-  runnerActualDurations.pop();
+  const timeSpent = runnerActualDurations.pop() || 0;
   runnerIndex--;
   runnerStepStart = new Date();
-  // Recalculate scheduled ends from now
-  let t = new Date();
-  for (let i = runnerIndex; i < runnerSteps.length; i++) {
+  // Verbleibende Zeit = geplant minus bereits verbracht (min. 10 Sek)
+  const plannedMs = runnerSteps[runnerIndex].duration * 60000;
+  const remainingMs = Math.max(10000, plannedMs - timeSpent);
+  runnerScheduledEnds[runnerIndex] = new Date(Date.now() + remainingMs);
+  // Folgeschritte neu berechnen
+  let t = new Date(runnerScheduledEnds[runnerIndex]);
+  for (let i = runnerIndex + 1; i < runnerSteps.length; i++) {
     t = new Date(t.getTime() + runnerSteps[i].duration * 60000);
     runnerScheduledEnds[i] = new Date(t);
   }
