@@ -1136,7 +1136,7 @@
     </div><!-- /dashboard-screen -->
 
   <!-- ACTION RUNNER — global, außerhalb aller page-areas -->
-  <div id="action-runner" style="display:none;position:fixed;inset:0;z-index:900;background:linear-gradient(160deg,#1a3d2b 0%,#0f2419 60%,#0a1a10 100%);flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 40px;">
+  <div id="action-runner" style="display:none;position:fixed;inset:0;z-index:900;background:linear-gradient(160deg,#1a3d2b 0%,#0f2419 60%,#0a1a10 100%);flex-direction:column;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 60px) 24px 40px;">
   <div style="position:absolute;top:0;left:0;right:0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
   <div style="display:flex;align-items:center;gap:10px;min-width:0;">
     <div style="font-family:var(--font-d);font-size:15px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;flex-shrink:0;">PERFORMATIVEZ</div>
@@ -2650,6 +2650,7 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
   let runnerStepStart=null, runnerStartTime=null;
   let runnerActualDurations=[], runnerScheduledEnds=[];
   let runnerClockInterval=null;
+let runnerSavedEnds = [];
   let runnerMode = 'dynamic'; // 'dynamic' | 'static'
 
   window.setRunnerMode = (mode) => {
@@ -2827,7 +2828,8 @@ if (backBtn) {
         }
       }
       // Statisch: Ends nie anfassen — bleiben wie ursprünglich gesetzt
-      runnerIndex++; runnerStepStart=new Date(); showRunnerStep();
+      runnerSavedEnds[runnerIndex] = new Date(runnerScheduledEnds[runnerIndex]);
+runnerIndex++; runnerStepStart=new Date(); showRunnerStep();
     } else { showSummary(); }
   };
 
