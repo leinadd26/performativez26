@@ -634,7 +634,13 @@
           <div class="mini-progress" id="mini-progress-bar" style="position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-l));border-radius:99px;transition:width 1s linear;"></div>
         </div>
 
-        <div class="nav-user"><div class="nav-avatar" id="nav-avatar">?</div><span id="nav-username">User</span></div>
+        <div class="nav-user-wrap">
+  <div class="nav-user" onclick="toggleUserDropdown()"><div class="nav-avatar" id="nav-avatar">?</div><span id="nav-username">User</span></div>
+  <div class="nav-dropdown" id="nav-dropdown">
+    <div class="nav-dropdown-item" onclick="transferUserData();toggleUserDropdown()">⇄ Data Transfer</div>
+    <div class="nav-dropdown-item" style="color:#c0392b;" onclick="handleLogout()">← Abmelden</div>
+  </div>
+</div>
         <button class="nav-logout" onclick="handleLogout()" >Abmelden</button>
       </div>
     </nav>
