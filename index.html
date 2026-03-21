@@ -1620,7 +1620,9 @@
   // ─────────────────────────────────────────────
   let unsubActions = null, unsubHabits = null;
   let dailySaveTimer = null;
-  const todayKey = () => function getHabitPeriodStart(anchor, freq, unit) {
+  const todayKey = () => new Date().toISOString().slice(0,10);
+
+function getHabitPeriodStart(anchor, freq, unit) {
   const anchorDate = new Date((anchor || todayKey()) + 'T00:00:00');
   const today = new Date(); today.setHours(0,0,0,0);
   const freqDays = unit === 'weeks' ? (freq||1) * 7 : (freq||1);
