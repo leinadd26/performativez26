@@ -2869,6 +2869,20 @@ if (backBtn) backBtn.style.display = runnerIndex > 0 ? 'block' : 'none';
     }
     toast('⚡ Action abgeschlossen!');
   };
+  window.runnerBack = () => {
+  if (runnerIndex <= 0) return;
+  clearInterval(runnerClockInterval);
+  runnerActualDurations.pop();
+  runnerIndex--;
+  runnerStepStart = new Date();
+  // Recalculate scheduled ends from now
+  let t = new Date();
+  for (let i = runnerIndex; i < runnerSteps.length; i++) {
+    t = new Date(t.getTime() + runnerSteps[i].duration * 60000);
+    runnerScheduledEnds[i] = new Date(t);
+  }
+  showRunnerStep();
+};
   window.abortRunner = () => {
     clearInterval(runnerClockInterval);
     const el = document.getElementById('action-runner');
@@ -3112,20 +3126,7 @@ if (backBtn) backBtn.style.display = runnerIndex > 0 ? 'block' : 'none';
   if (!confirm('Achtung: Alle deine aktuellen Daten werden überschrieben. Fortfahren?')) return;
   toast('Transfer läuft...', 'success');
 
-  window.runnerBack = () => {
-  if (runnerIndex <= 0) return;
-  clearInterval(runnerClockInterval);
-  runnerActualDurations.pop();
-  runnerIndex--;
-  runnerStepStart = new Date();
-  // Recalculate scheduled ends from now
-  let t = new Date();
-  for (let i = runnerIndex; i < runnerSteps.length; i++) {
-    t = new Date(t.getTime() + runnerSteps[i].duration * 60000);
-    runnerScheduledEnds[i] = new Date(t);
-  }
-  showRunnerStep();
-};
+  
 
   async function batchedDelete(colPath) {
     const snap = await getDocs(collection(db, ...colPath));
