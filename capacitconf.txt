@@ -2,6 +2,9 @@
   "appId": "com.daniel.performativez",
   "appName": "performativez",
   "webDir": "www",
+  "ios": {
+    "limitsNavigationsToAppBoundDomains": true
+  },
   "plugins": {
     "GoogleAuth": {
       "scopes": ["profile", "email"],
