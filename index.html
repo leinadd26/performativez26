@@ -1903,7 +1903,7 @@ function isHabitDone(data) {
 
       const allActions = [];
       as.forEach(d => allActions.push({id:d.id, ...d.data()}));
-      const undone = allActions.filter(a => !a.completedToday);
+      const undone = allActions.filter(a => {   if (a.completedToday) return false;   const n = a.name.toLowerCase();   if (isWeekend && (n.includes('weekday') || n.includes('wochentag'))) return false;   if (!isWeekend && (n.includes('weekend') || n.includes('wochenende'))) return false;   return true; });
 
       // Explizite Priorität für die 4 bekannten Action-Typen
       function scoreAction(a) {
