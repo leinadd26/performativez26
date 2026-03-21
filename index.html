@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="https://progressier.app/fXg6zukqi4LBDMNdbHkb/progressier.json"/><script defer src="https://progressier.app/fXg6zukqi4LBDMNdbHkb/script.js"></script> 
+  <link rel="manifest" href="https://progressier.app/fXg6zukqi4LBDMNdbHkb/progressier.json"/><script defer src="https://progressier.app/fXg6zukqi4LBDMNdbHkb/script.js"></script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Performativez</title>
   <link rel="icon" type="image/png" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
@@ -235,7 +235,7 @@
     #dashboard-screen { flex-direction:column; }
 
     /* NAV */
-    .dash-nav { display:flex; align-items:center; padding:0 28px; border-bottom:1px solid var(--border); background:rgba(247,245,240,0.92); backdrop-filter:blur(20px); position:sticky; top:0; z-index:200; height:58px; gap:4px; }
+    .dash-nav { display:flex; align-items:center; padding:0 28px; padding-top:env(safe-area-inset-top); border-bottom:1px solid var(--border); background:rgba(247,245,240,0.92); backdrop-filter:blur(20px); position:sticky; top:0; z-index:200; height:calc(58px + env(safe-area-inset-top)); gap:4px; }
     .nav-brand { display:flex; align-items:center; gap:9px; margin-right:28px; text-decoration:none; cursor:pointer; }
     .nav-brand img { height:26px; width:26px; object-fit:contain; border-radius:6px; }
     .nav-brand-text { font-family:var(--font-d); font-size:21px; color:var(--accent); letter-spacing:0.05em; }
@@ -3074,36 +3074,37 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
   };
 
   window.transferUserData = async () => {
-  const fromUID = prompt('UID des Quell-Accounts (von wem kopieren):');
-  if (!fromUID) return;
-  const toUID = currentUser.uid;
-  if (fromUID === toUID) { toast('Gleicher Account!', 'error'); return; }
-  toast('Transfer läuft...', 'success');
-  try {
-    const batch = writeBatch(db);
-    const cols = ['actions', 'habits', 'finance'];
-    const userSnap = await getDoc(doc(db, 'users', fromUID));
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      delete data.email;
-      batch.update(doc(db, 'users', toUID), data);
-    }
-    for (const col of cols) {
-      const snap = await getDocs(collection(db, 'users', fromUID, col));
-      snap.forEach(d => {
-        batch.set(doc(collection(db, 'users', toUID, col)), d.data());
+    const { getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const fromUID = prompt('UID des Quell-Accounts (von wem kopieren):');
+    if (!fromUID) return;
+    const toUID = currentUser.uid;
+    if (fromUID === toUID) { toast('Gleicher Account!', 'error'); return; }
+    toast('Transfer läuft...', 'success');
+    try {
+      const batch = writeBatch(db);
+      const cols = ['actions', 'habits', 'finance'];
+      const userSnap = await getDoc(doc(db, 'users', fromUID));
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        delete data.email;
+        batch.update(doc(db, 'users', toUID), data);
+      }
+      for (const col of cols) {
+        const snap = await getDocs(collection(db, 'users', fromUID, col));
+        snap.forEach(d => {
+          batch.set(doc(collection(db, 'users', toUID, col)), d.data());
+        });
+      }
+      const logsSnap = await getDocs(collection(db, 'users', fromUID, 'dailyLogs'));
+      logsSnap.forEach(d => {
+        batch.set(doc(db, 'users', toUID, 'dailyLogs', d.id), d.data());
       });
+      await batch.commit();
+      toast('✅ Alle Daten übertragen!', 'success');
+    } catch(e) {
+      toast('Fehler: ' + e.message, 'error');
     }
-    const logsSnap = await getDocs(collection(db, 'users', fromUID, 'dailyLogs'));
-    logsSnap.forEach(d => {
-      batch.set(doc(db, 'users', toUID, 'dailyLogs', d.id), d.data());
-    });
-    await batch.commit();
-    toast('✅ Alle Daten übertragen!', 'success');
-  } catch(e) {
-    toast('Fehler: ' + e.message, 'error');
-  }
-};
+  };
 
   function finFmt(n)     { return n.toLocaleString('de-DE', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
   function finFmtDate(s) { if (!s) return ''; const [y,m,d] = s.split('-'); return `${d}.${m}.${y}`; }
