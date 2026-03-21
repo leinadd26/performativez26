@@ -3095,43 +3095,50 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
   };
 
   window.transferUserData = async () => {
-  const { getDocs, deleteDoc: delDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  const { getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
   const fromUID = prompt('UID des Quell-Accounts (von wem kopieren):');
   if (!fromUID) return;
   const toUID = currentUser.uid;
   if (fromUID === toUID) { toast('Gleicher Account!', 'error'); return; }
   if (!confirm('Achtung: Alle deine aktuellen Daten werden überschrieben. Fortfahren?')) return;
   toast('Transfer läuft...', 'success');
+
+  async function batchedDelete(colPath) {
+    const snap = await getDocs(collection(db, ...colPath));
+    const docs = snap.docs;
+    for (let i = 0; i < docs.length; i += 400) {
+      const b = writeBatch(db);
+      docs.slice(i, i+400).forEach(d => b.delete(d.ref));
+      await b.commit();
+    }
+  }
+
+  async function batchedCopy(fromColPath, toColPath) {
+    const snap = await getDocs(collection(db, ...fromColPath));
+    const docs = snap.docs;
+    for (let i = 0; i < docs.length; i += 400) {
+      const b = writeBatch(db);
+      docs.slice(i, i+400).forEach(d => {
+        b.set(doc(db, ...toColPath, d.id), d.data());
+      });
+      await b.commit();
+    }
+  }
+
   try {
     const cols = ['actions', 'habits', 'finance', 'dailyLogs'];
-
-    // 1. Ziel-Collections leeren
     for (const col of cols) {
-      const existing = await getDocs(collection(db, 'users', toUID, col));
-      const delBatch = writeBatch(db);
-      existing.forEach(d => delBatch.delete(doc(db, 'users', toUID, col, d.id)));
-      await delBatch.commit();
+      await batchedDelete(['users', toUID, col]);
+      await batchedCopy(['users', fromUID, col], ['users', toUID, col]);
     }
-
-    // 2. Quell-Daten mit gleichen IDs kopieren
-    const copyBatch = writeBatch(db);
-    for (const col of cols) {
-      const snap = await getDocs(collection(db, 'users', fromUID, col));
-      snap.forEach(d => {
-        copyBatch.set(doc(db, 'users', toUID, col, d.id), d.data());
-      });
-    }
-
-    // 3. User-Doc überschreiben (ohne Email)
     const userSnap = await getDoc(doc(db, 'users', fromUID));
     if (userSnap.exists()) {
       const data = { ...userSnap.data() };
       delete data.email;
-      copyBatch.update(doc(db, 'users', toUID), data);
+      await updateDoc(doc(db, 'users', toUID), data);
     }
-
-    await copyBatch.commit();
     toast('✅ Daten erfolgreich überschrieben!', 'success');
+    setTimeout(() => location.reload(), 1500);
   } catch(e) {
     toast('Fehler: ' + e.message, 'error');
   }
