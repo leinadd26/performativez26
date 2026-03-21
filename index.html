@@ -1623,19 +1623,25 @@
   const todayKey = () => new Date().toISOString().slice(0,10);
 
 function getHabitPeriodStart(anchor, freq, unit) {
-  const anchorDate = new Date((anchor || todayKey()) + 'T00:00:00');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const freqDays = unit === 'weeks' ? (freq||1) * 7 : (freq||1);
-  const daysSinceAnchor = Math.floor((today - anchorDate) / 86400000);
-  const periodIndex = Math.max(0, Math.floor(daysSinceAnchor / freqDays));
-  const periodStart = new Date(anchorDate.getTime() + periodIndex * freqDays * 86400000);
-  return periodStart.toISOString().slice(0,10);
+  try {
+    const anchorStr = (typeof anchor === 'string' && anchor) ? anchor : todayKey();
+    const anchorDate = new Date(anchorStr + 'T00:00:00');
+    if (isNaN(anchorDate.getTime())) return todayKey();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const freqDays = unit === 'weeks' ? (freq||1) * 7 : (freq||1);
+    const daysSinceAnchor = Math.floor((today - anchorDate) / 86400000);
+    const periodIndex = Math.max(0, Math.floor(daysSinceAnchor / freqDays));
+    const periodStart = new Date(anchorDate.getTime() + periodIndex * freqDays * 86400000);
+    return periodStart.toISOString().slice(0,10);
+  } catch(e) { return todayKey(); }
 }
 
 function isHabitDone(data) {
-  if (!data.doneTodayDate) return false;
-  const periodStart = getHabitPeriodStart(data.anchor, data.freq, data.unit);
-  return data.doneTodayDate >= periodStart;
+  try {
+    if (!data.doneTodayDate) return false;
+    const periodStart = getHabitPeriodStart(data.anchor, data.freq, data.unit);
+    return data.doneTodayDate >= periodStart;
+  } catch(e) { return false; }
 }
   // ── ACTIONS ─────────────────────────────────
   function subscribeActions() {
