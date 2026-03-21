@@ -2877,18 +2877,18 @@ runnerIndex++; runnerStepStart=new Date(); showRunnerStep();
   window.runnerBack = () => {
   if (runnerIndex <= 0) return;
   clearInterval(runnerClockInterval);
-  const timeSpent = runnerActualDurations.pop() || 0;
+  runnerActualDurations.pop();
   runnerIndex--;
   runnerStepStart = new Date();
-  // Verbleibende Zeit = geplant minus bereits verbracht (min. 10 Sek)
-  const plannedMs = runnerSteps[runnerIndex].duration * 60000;
-  const remainingMs = Math.max(10000, plannedMs - timeSpent);
-  runnerScheduledEnds[runnerIndex] = new Date(Date.now() + remainingMs);
-  // Folgeschritte neu berechnen
+  if (runnerSavedEnds[runnerIndex]) {
+    runnerScheduledEnds[runnerIndex] = new Date(runnerSavedEnds[runnerIndex]);
+  } else {
+    runnerScheduledEnds[runnerIndex] = new Date(Date.now() + runnerSteps[runnerIndex].duration * 60000);
+  }
   let t = new Date(runnerScheduledEnds[runnerIndex]);
   for (let i = runnerIndex + 1; i < runnerSteps.length; i++) {
-    t = new Date(t.getTime() + runnerSteps[i].duration * 60000);
-    runnerScheduledEnds[i] = new Date(t);
+    runnerScheduledEnds[i] = runnerSavedEnds[i] ? new Date(runnerSavedEnds[i]) : new Date(t.getTime() + runnerSteps[i].duration * 60000);
+    t = new Date(runnerScheduledEnds[i]);
   }
   showRunnerStep();
 };
