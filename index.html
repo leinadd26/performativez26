@@ -1637,7 +1637,6 @@ function isHabitDone(data) {
   const periodStart = getHabitPeriodStart(data.anchor, data.freq, data.unit);
   return data.doneTodayDate >= periodStart;
 }
-
   // ── ACTIONS ─────────────────────────────────
   function subscribeActions() {
     if (unsubActions) unsubActions();
