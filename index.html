@@ -3057,6 +3057,13 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
     finCloseModal();
   };
 
+  window.toggleUserDropdown = () => {
+  const d = document.getElementById('nav-dropdown');
+  d.classList.toggle('open');
+  const close = (e) => { if (!e.target.closest('.nav-user-wrap')) { d.classList.remove('open'); document.removeEventListener('click', close); } };
+  if (d.classList.contains('open')) setTimeout(() => document.addEventListener('click', close), 10);
+};
+  
   window.finCycleFilter = () => {
     const order  = ['all','income','expense'];
     const labels = { all:'Alle', income:'Einnahmen', expense:'Ausgaben' };
