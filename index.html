@@ -1950,12 +1950,16 @@ function isHabitDone(data) {
       const btnEl  = document.getElementById('dash-rec-action-btn');
       const subEl2 = document.getElementById('dash-rec-action-sub');
       if (nameEl) nameEl.textContent = best ? best.name : '✓ Alle erledigt';
-      if (btnEl)  { btnEl.style.display = best ? 'flex' : 'none'; }
-      if (subEl2 && best) {
-        const steps = best.steps||[];
-        const totalMin = steps.reduce((a,s)=>a+(s.duration||0),0);
-        subEl2.textContent = steps.length > 0 ? `${steps.length} Schritt${steps.length>1?'e':''} · ${totalMin} min` : (best.desc||'');
-      }
+if (btnEl)  { btnEl.style.display = best ? 'flex' : 'none'; }
+if (subEl2) {
+  if (best) {
+    const steps = best.steps||[];
+    const totalMin = steps.reduce((a,s)=>a+(s.duration||0),0);
+    subEl2.textContent = steps.length > 0 ? `${steps.length} Schritt${steps.length>1?'e':''} · ${totalMin} min` : (best.desc||'');
+  } else {
+    subEl2.textContent = '';
+  }
+}
       const cardEl = document.getElementById('dash-rec-action');
       if (cardEl) { cardEl._recId = best?.id; cardEl._recSteps = best?.steps||[]; }
 
