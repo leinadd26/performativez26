@@ -1802,7 +1802,7 @@ function isHabitDone(data) {
       } else {
         habEl.innerHTML = '';
         hs.forEach(d => {
-          const data = d.data(), done = data.doneToday||false;
+          const data = d.data(), done = isHabitDone(data);
           const row = document.createElement('div');
           row.style.cssText = `display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);`;
           row.innerHTML = `
@@ -1851,7 +1851,7 @@ function isHabitDone(data) {
       ovHabits.innerHTML = '';
       if (hs.size === 0) ovHabits.innerHTML = `<div style="font-size:11px;color:var(--muted);font-family:var(--font-m);">—</div>`;
       hs.forEach(d => {
-        const data = d.data(), done = data.doneToday||false;
+        const data = d.data(), done = isHabitDone(data);
         const el = document.createElement('div');
         el.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:11px;';
         el.innerHTML = `<span style="color:${done?'var(--accent)':'var(--muted)'};">${done?'✓':'−'}</span><span style="color:${done?'var(--text)':'var(--muted)'};opacity:${done?1:0.7};">${data.name}</span>`;
@@ -2112,7 +2112,7 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
       return;
     }
     snap.forEach(d=>{
-      const data=d.data(), done=data.doneToday||false;
+      const data=d.data(), done=isHabitDone(data);
       const card=document.createElement('div');
       card.className='c';
       card.style.cssText='display:flex;align-items:center;gap:16px;';
