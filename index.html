@@ -1869,7 +1869,7 @@ function isHabitDone(data) {
         if (isWeekend && (n.includes('weekday') || n.includes('wochentag'))) return;
         if (!isWeekend && (n.includes('weekend') || n.includes('wochenende'))) return;
         shown++;
-        const done = data.completedToday||false;
+        const done = isHabitDone(data);
         const el = document.createElement('div');
         el.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:11px;';
         el.innerHTML = `<span style="color:${done?'var(--accent)':'var(--muted)'};">${done?'✓':'−'}</span><span style="color:${done?'var(--text)':'var(--muted)'};opacity:${done?1:0.7};">${data.name}</span>`;
@@ -1971,7 +1971,7 @@ function isHabitDone(data) {
           recHabList.innerHTML = '';
           recHabList.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
           allHabits.forEach(h => {
-            const done = h.doneToday||false;
+            const done = isHabitDone(h);
             const cell = document.createElement('div');
             cell.style.cssText = `display:flex;align-items:center;gap:8px;background:${done?'var(--accent-bg)':'var(--bg)'};border:1px solid ${done?'rgba(61,158,104,0.3)':'var(--border)'};border-radius:var(--radius);padding:10px 12px;cursor:pointer;transition:all 0.2s;`;
             cell.innerHTML = `
