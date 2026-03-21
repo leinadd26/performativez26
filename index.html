@@ -2714,6 +2714,9 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
       const col = i<runnerIndex?'background:rgba(61,158,104,0.8);':i===runnerIndex?'background:#fff;':'background:rgba(255,255,255,0.18);';
       return `<div style="width:${i===runnerIndex?'28px':'8px'};height:8px;border-radius:99px;${col}transition:all 0.3s;"></div>`;
     }).join('');
+    // Zeige Back-Button nur wenn nicht erster Schritt
+const backBtn = document.getElementById('runner-back-btn');
+if (backBtn) backBtn.style.display = runnerIndex > 0 ? 'block' : 'none';
     // Reset bar
     const bar=document.getElementById('runner-status-fill');
     bar.style.width='100%'; bar.style.background='var(--accent)';
@@ -3106,6 +3109,21 @@ Gib eine kurze motivierende Empfehlung (2-3 Sätze) was der User JETZT tun sollt
   if (fromUID === toUID) { toast('Gleicher Account!', 'error'); return; }
   if (!confirm('Achtung: Alle deine aktuellen Daten werden überschrieben. Fortfahren?')) return;
   toast('Transfer läuft...', 'success');
+
+  window.runnerBack = () => {
+  if (runnerIndex <= 0) return;
+  clearInterval(runnerClockInterval);
+  runnerActualDurations.pop();
+  runnerIndex--;
+  runnerStepStart = new Date();
+  // Recalculate scheduled ends from now
+  let t = new Date();
+  for (let i = runnerIndex; i < runnerSteps.length; i++) {
+    t = new Date(t.getTime() + runnerSteps[i].duration * 60000);
+    runnerScheduledEnds[i] = new Date(t);
+  }
+  showRunnerStep();
+};
 
   async function batchedDelete(colPath) {
     const snap = await getDocs(collection(db, ...colPath));
